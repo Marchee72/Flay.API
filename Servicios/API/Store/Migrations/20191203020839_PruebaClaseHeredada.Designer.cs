@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Repository;
+using Store;
 
-namespace Repository.Migrations
+namespace Store.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AplicattionDbContext))]
+    [Migration("20191203020839_PruebaClaseHeredada")]
+    partial class PruebaClaseHeredada
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,7 +21,7 @@ namespace Repository.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Repository.Apartment", b =>
+            modelBuilder.Entity("DbModels.Apartment", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -29,17 +31,14 @@ namespace Repository.Migrations
                     b.Property<int>("BuildingID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Floor")
                         .HasColumnType("int");
 
-                    b.Property<float>("Percentage")
-                        .HasColumnType("real");
-
-                    b.Property<int>("RoomsNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SquareMeters")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Percentage")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ID");
 
@@ -48,14 +47,17 @@ namespace Repository.Migrations
                     b.ToTable("Apartment");
                 });
 
-            modelBuilder.Entity("Repository.Building", b =>
+            modelBuilder.Entity("DbModels.Building", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Address")
+                    b.Property<int>("AddressNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Street")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -63,24 +65,21 @@ namespace Repository.Migrations
                     b.ToTable("Building");
                 });
 
-            modelBuilder.Entity("Repository.User", b =>
+            modelBuilder.Entity("DbModels.Renter", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ApartmentId")
+                    b.Property<int>("ApartmentID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("DateFrom")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("DateUntil")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
@@ -88,30 +87,29 @@ namespace Repository.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserType")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("ID");
 
-                    b.HasIndex("ApartmentId");
+                    b.HasIndex("ApartmentID");
 
-                    b.ToTable("User");
+                    b.ToTable("Renter");
                 });
 
-            modelBuilder.Entity("Repository.Apartment", b =>
+            modelBuilder.Entity("DbModels.Apartment", b =>
                 {
-                    b.HasOne("Repository.Building", "Building")
+                    b.HasOne("DbModels.Building", "Building")
                         .WithMany("Apartments")
                         .HasForeignKey("BuildingID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Repository.User", b =>
+            modelBuilder.Entity("DbModels.Renter", b =>
                 {
-                    b.HasOne("Repository.Apartment", "Apartment")
-                        .WithMany()
-                        .HasForeignKey("ApartmentId");
+                    b.HasOne("DbModels.Apartment", "Apartment")
+                        .WithMany("Renters")
+                        .HasForeignKey("ApartmentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
